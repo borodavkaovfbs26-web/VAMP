@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вхід — VAMP</title>
+<link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+
+<body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="script.js"></script>
+<div class="auth-page">
+  <div class="auth-card">
+
+    <a class="brand" href="index.html">
+      <span class="brand-mark">V</span>
+      <span class="brand-name">VAMP</span>
+    </a>
+
+    <div class="eyebrow">ТВОЯ ОСВІТНЯ ІСТОРІЯ</div>
+
+    <h1 id="authTitle">З поверненням!</h1>
+
+    <p class="subtitle">
+      Увійди до свого навчального простору.
+    </p>
+
+    <div class="auth-tabs">
+      <button id="loginTab" class="active" type="button">
+        Вхід
+      </button>
+
+      <button id="signupTab" type="button">
+        Реєстрація
+      </button>
+    </div>
+
+    <div id="notice" hidden></div>
+
+    <form id="authForm" class="form-grid">
+
+      <div class="field" id="nameField" hidden>
+        <label>Ім'я та прізвище</label>
+
+        <input
+          class="input"
+          name="full_name"
+          placeholder="Як тебе звати?"
+        >
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+
+        <input
+          class="input"
+          name="email"
+          type="email"
+          required
+          placeholder="you@example.com"
+          autocomplete="email"
+        >
+      </div>
+
+      <div class="field">
+        <label>Пароль</label>
+
+        <input
+          class="input"
+          name="password"
+          type="password"
+          required
+          minlength="6"
+          placeholder="Мінімум 6 символів"
+          autocomplete="current-password"
+        >
+      </div>
+
+      <button class="btn btn-primary" id="submitBtn">
+        Увійти →
+      </button>
+
+    </form>
+
+    <button
+      id="forgotBtn"
+      class="btn"
+      style="width:100%;margin-top:12px"
+    >
+      Забули пароль?
+    </button>
+
+    <p class="footer-note">
+      Захищений вхід · VAMP
+    </p>
+
+  </div>
+</div>
+
+<script>
+const sb = window.vampSupabase;
+
+let mode = new URLSearchParams(location.search)
+  .get("mode") === "signup"
+  ? "signup"
+  : "login";
+
+const $ = selector => document.querySelector(selector);
+
+function notice(message, type = "") {
+  const box = $("#notice");
+
+  box.hidden = false;
+  box.className = "notice " + type;
+  box.textContent = message;
+}
+
+function setMode(nextMode) {
+  mode = nextMode;
+
+  $("#loginTab").classList.toggle(
+    "active",
+    mode === "login"
+  );
+
+  $("#signupTab").classList.toggle(
+    "active",
+    mode === "signup"
+  );
+
+  $("#nameField").hidden = mode !== "signup";
+
+  $("#authTitle").textContent =
+    mode === "signup"
+    ? "Створи акаунт"
+    : "З поверненням!";
+
+  $("#submitBtn").textContent =
+    mode === "signup"
+    ? "Зареєструватися →"
+    : "Увійти →";
+
+  $("#forgotBtn").hidden = mode === "signup";
+}
+
+$("#loginTab").onclick = () => setMode("login");
+
+$("#signupTab").onclick = () => setMode("signup");
+
+$("#authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const form = new FormData(event.currentTarget);
+
+  const email = form.get("email").trim();
+  const password = form.get("password");
+
+  $("#submitBtn").disabled = true;
+
+  try {
+
+    if (mode === "signup") {
+
+      const full_name = form.get("full_name").trim();
+
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password,
+
+        options: {
+          data: {
+            full_name
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+
+        notice(
+          "Акаунт створено! Перенаправляємо...",
+          "success"
+        );
+
+        location.href = "dashboard.html";
+
+      } else {
+
+        notice(
+          "Перевір свою пошту та підтвердь реєстрацію.",
+          "success"
+        );
+
+      }
+
+    } else {
+
+      const { data, error } =
+        await sb.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (error) throw error;
+
+      location.href = "dashboard.html";
+
+    }
+
+  } catch (error) {
+
+    notice(
+      error.message || "Не вдалося виконати дію.",
+      "error"
+    );
+
+  } finally {
+
+    $("#submitBtn").disabled = false;
+
+  }
+
+});
+
+$("#forgotBtn").onclick = async () => {
+
+  const email = $("#authForm")
+    .elements.email.value.trim();
+
+  if (!email) {
+
+    notice("Спочатку введи свою електронну пошту.");
+
+    return;
+
+  }
+
+  const { error } =
+    await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: location.origin + "/login.html"
+    });
+
+  if (error) {
+
+    notice(error.message, "error");
+
+  } else {
+
+    notice(
+      "Якщо акаунт існує, лист для відновлення надіслано.",
+      "success"
+    );
+
+  }
+
+};
+
+sb.auth.getSession().then(({ data }) => {
+
+  if (data.session) {
+    location.href = "dashboard.html";
+  }
+
+});
+
+setMode(mode);
+</script>
+
+</body>
+</html>
