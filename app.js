@@ -137,6 +137,8 @@ async function renderPage(){
  }catch(e){console.error(e);v.innerHTML=title("Не вдалося завантажити дані")+`<div class="panel">${esc(e.message)}<p class="muted">Перевір SQL-схему та політики доступу Supabase.</p></div>`}
 }
 async function home(v){
+ if(!v) v=$("#view");
+ if(!v) return;
  const [tasks,lessons,sched]=await Promise.all([rows("tasks",{student_id:user.id}),rows("lesson_progress",{user_id:user.id}),rows("lessons",{student_id:user.id})]);
  const done=tasks.filter(x=>x.status==="submitted"||x.status==="checked").length;
  v.innerHTML=title(`Привіт, ${esc((profile.full_name||"учню").split(" ")[0])}! 👋`,"Твій навчальний простір — усе важливе в одному місці.")+
