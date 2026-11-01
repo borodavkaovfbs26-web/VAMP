@@ -75,13 +75,95 @@ function toast(m) {
 }
 
 async function init() {
-  if (!sb) {
-    document.body.innerHTML = '<div class="auth"><div class="authbox"><h1>VAMP</h1><p>Не підключено Supabase. Перевір supabase.js.</p></div></div>';
+  // Перевіряємо підключення Supabase
+  if (!window.vampSupabase) {
+    document.body.innerHTML = `
+      <div class="auth">
+        <div class="authbox">
+          <h1>VAMP</h1>
+          <p>Не підключено Supabase. Перевір файл supabase.js.</p>
+        </div>
+      </div>
+    `;
     return;
   }
 
-  const { data: { session } } = await sb.auth.getSession();
-  user = session?.user;
+  // Отримуємо підключення
+  const sb = window.vampSupabase;
+
+  // Перевіряємо авторизацію
+  const { data, error } = await sb.auth.getSession();
+
+  if (error) {
+    console.error("Помилка авторизації:", error);
+    return;
+  }
+
+  user = data.session?.user || null;
+
+  // Якщо відкрито сторінку входу
+  if (location.pathname.endsWith("login.html")) {
+    renderLogin();
+    return;
+  }
+
+  // Якщо користувач не увійшов — переходимо на вхід
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+
+  // Завантажуємо профіль
+  const { data: p, error: profileError } = await sb
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Помилка профілю:", profileError);
+    toast("Не вдалося завантажити профіль: " + profileError.message);
+    return;
+  }
+
+  profile = p;
+
+  // Якщо профілю немає
+  if (!profile) {
+    document.body.innerHTML = `
+      <div class="auth">
+        <div class="authbox">
+          <h1>Профіль ще не створено</h1>
+          <p>Попроси адміністратора завершити створення акаунта.</p>
+          <button onclick="window.vampSupabase.auth.signOut().then(() => location.href='login.html')">
+            Вийти
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Якщо акаунт очікує активації
+  if (profile.role === "pending") {
+    document.body.innerHTML = `
+      <div class="auth">
+        <div class="authbox">
+          <h1>Очікуємо активацію</h1>
+          <p>Адміністратор має призначити тобі роль.</p>
+          <button onclick="window.vampSupabase.auth.signOut().then(() => location.href='login.html')">
+            Вийти
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Відображаємо кабінет
+  renderShell();
+  await renderPage();
+}
 
   if (location.pathname.endsWith("login.html")) {
     renderLogin();
