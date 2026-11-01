@@ -115,18 +115,6 @@ async function init() {
     document.body.innerHTML = '<div class="auth"><div class="authbox"><h1>Очікуємо активацію</h1><p>Адміністратор має призначити тобі роль.</p><button onclick="sb.auth.signOut().then(()=>location.href=\'login.html\')">Вийти</button></div></div>';
     return;
   }
-  const sb = window.vampSupabase;
-const $ = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => r.querySelectorAll(s);
-
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;"
-}[c]));
-
 const fmt = d => d
   ? new Date(d).toLocaleString("uk-UA", { dateStyle: "medium", timeStyle: "short" })
   : "—";
