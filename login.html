@@ -5,16 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Вхід — VAMP</title>
-<link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
 </head>
 
 <body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-<script src="script.js"></script>
+
 <div class="auth-page">
   <div class="auth-card">
 
@@ -52,6 +51,7 @@
           class="input"
           name="full_name"
           placeholder="Як тебе звати?"
+          autocomplete="name"
         >
       </div>
 
@@ -82,7 +82,7 @@
         >
       </div>
 
-      <button class="btn btn-primary" id="submitBtn">
+      <button class="btn btn-primary" id="submitBtn" type="submit">
         Увійти →
       </button>
 
@@ -91,6 +91,7 @@
     <button
       id="forgotBtn"
       class="btn"
+      type="button"
       style="width:100%;margin-top:12px"
     >
       Забули пароль?
@@ -113,6 +114,12 @@ let mode = new URLSearchParams(location.search)
 
 const $ = selector => document.querySelector(selector);
 
+// Правильний шлях для GitHub Pages
+function getPageUrl(page) {
+  return new URL(page, window.location.href).href;
+}
+
+// Повідомлення
 function notice(message, type = "") {
   const box = $("#notice");
 
@@ -121,6 +128,7 @@ function notice(message, type = "") {
   box.textContent = message;
 }
 
+// Перемикання входу та реєстрації
 function setMode(nextMode) {
   mode = nextMode;
 
@@ -138,23 +146,31 @@ function setMode(nextMode) {
 
   $("#authTitle").textContent =
     mode === "signup"
-    ? "Створи акаунт"
-    : "З поверненням!";
+      ? "Створи акаунт"
+      : "З поверненням!";
 
   $("#submitBtn").textContent =
     mode === "signup"
-    ? "Зареєструватися →"
-    : "Увійти →";
+      ? "Зареєструватися →"
+      : "Увійти →";
 
   $("#forgotBtn").hidden = mode === "signup";
+
+  $("#notice").hidden = true;
 }
 
 $("#loginTab").onclick = () => setMode("login");
 
 $("#signupTab").onclick = () => setMode("signup");
 
+// Реєстрація та вхід
 $("#authForm").addEventListener("submit", async event => {
   event.preventDefault();
+
+  if (!sb) {
+    notice("Помилка підключення. Онови сторінку.", "error");
+    return;
+  }
 
   const form = new FormData(event.currentTarget);
 
@@ -169,14 +185,22 @@ $("#authForm").addEventListener("submit", async event => {
 
       const full_name = form.get("full_name").trim();
 
+      if (!full_name) {
+        notice("Будь ласка, введи своє ім'я.", "error");
+        return;
+      }
+
       const { data, error } = await sb.auth.signUp({
-        email,
-        password,
+        email: email,
+        password: password,
 
         options: {
           data: {
-            full_name
-          }
+            full_name: full_name
+          },
+
+          // Повернення на сторінку входу після підтвердження
+          emailRedirectTo: getPageUrl("login.html")
         }
       });
 
@@ -189,14 +213,16 @@ $("#authForm").addEventListener("submit", async event => {
           "success"
         );
 
-        location.href = "dashboard.html";
+        window.location.href = getPageUrl("dashboard.html");
 
       } else {
 
         notice(
-          "Перевір свою пошту та підтвердь реєстрацію.",
+          "Реєстрація майже завершена! Перевір свою пошту та натисни на посилання для підтвердження. Після цього повернися сюди та увійди.",
           "success"
         );
+
+        setMode("login");
 
       }
 
@@ -204,17 +230,21 @@ $("#authForm").addEventListener("submit", async event => {
 
       const { data, error } =
         await sb.auth.signInWithPassword({
-          email,
-          password
+          email: email,
+          password: password
         });
 
       if (error) throw error;
 
-      location.href = "dashboard.html";
+      if (data.session) {
+        window.location.href = getPageUrl("dashboard.html");
+      }
 
     }
 
   } catch (error) {
+
+    console.error("Помилка авторизації:", error);
 
     notice(
       error.message || "Не вдалося виконати дію.",
@@ -229,48 +259,72 @@ $("#authForm").addEventListener("submit", async event => {
 
 });
 
+// Відновлення пароля
 $("#forgotBtn").onclick = async () => {
+
+  if (!sb) {
+    notice("Помилка підключення. Онови сторінку.", "error");
+    return;
+  }
 
   const email = $("#authForm")
     .elements.email.value.trim();
 
   if (!email) {
 
-    notice("Спочатку введи свою електронну пошту.");
+    notice("Спочатку введи свою електронну пошту.", "error");
 
     return;
 
   }
 
-  const { error } =
-    await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: location.origin + "/login.html"
-    });
+  try {
 
-  if (error) {
+    const { error } =
+      await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: getPageUrl("login.html")
+      });
 
-    notice(error.message, "error");
-
-  } else {
+    if (error) throw error;
 
     notice(
-      "Якщо акаунт існує, лист для відновлення надіслано.",
+      "Якщо акаунт існує, лист для відновлення пароля надіслано. Перевір свою пошту.",
       "success"
     );
+
+  } catch (error) {
+
+    notice(error.message || "Не вдалося надіслати лист.", "error");
 
   }
 
 };
 
-sb.auth.getSession().then(({ data }) => {
+// Перевірка, чи користувач уже увійшов
+async function checkSession() {
 
-  if (data.session) {
-    location.href = "dashboard.html";
+  if (!sb) {
+    console.error("Supabase не підключено.");
+    return;
   }
 
-});
+  const { data, error } = await sb.auth.getSession();
+
+  if (error) {
+    console.error("Помилка перевірки сесії:", error);
+    return;
+  }
+
+  if (data.session) {
+
+    window.location.href = getPageUrl("dashboard.html");
+
+  }
+
+}
 
 setMode(mode);
+checkSession();
 </script>
 
 </body>
