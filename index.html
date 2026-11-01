@@ -4,142 +4,171 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0812">
+
   <title>VAMP — Онлайн-школа</title>
+
+  <meta name="description" content="VAMP — сучасна онлайн-школа для навчання, розвитку та нових можливостей.">
+
   <link rel="stylesheet" href="style.css">
+
 </head>
 
-<body class="landing-page">
+<body>
 
-  <header class="landing-header">
-    <a href="index.html" class="brand">
-      <span class="brand-mark">V</span>
-      <span class="brand-name">VAMP</span>
-    </a>
+  <header class="header">
+    <div class="logo">VAMP<span>.</span></div>
 
-    <nav>
+    <nav class="nav">
       <a href="#about">Про нас</a>
-      <a href="#features">Можливості</a>
-      <a href="login.html" class="btn btn-primary">Увійти →</a>
+      <a href="#advantages">Переваги</a>
+      <a href="#contacts">Контакти</a>
     </nav>
+
+    <a href="login.html" class="header-button">
+      Увійти
+    </a>
   </header>
 
-  <section class="landing-hero">
-    <div class="hero-content">
-      <span class="eyebrow">LEARN YOUR WAY · VAMP</span>
 
-      <h1>
-        Освіта, яка<br>
-        <span class="gradient-text">змінює тебе.</span>
-      </h1>
+  <main>
+
+    <section class="hero">
+
+      <div class="hero-content">
+
+        <span class="hero-label">
+          ✦ ТВОЄ МАЙБУТНЄ ПОЧИНАЄТЬСЯ ТУТ
+        </span>
+
+        <h1>
+          Навчайся.<br>
+          Розвивайся.<br>
+          <span>Досягай більшого.</span>
+        </h1>
+
+        <p>
+          VAMP — сучасний освітній простір, де навчання
+          стає захопливим, а твої цілі — досяжними.
+        </p>
+
+        <div class="hero-buttons">
+
+          <a href="login.html" class="primary-button">
+            Почати навчання →
+          </a>
+
+          <a href="#about" class="secondary-button">
+            Дізнатися більше
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="hero-decoration">
+        <div class="decoration-circle"></div>
+        <div class="decoration-text">V</div>
+      </div>
+
+    </section>
+
+
+    <section id="about" class="about section">
+
+      <span class="section-label">ПРО VAMP</span>
+
+      <h2>
+        Освіта, яка відкриває <span>можливості.</span>
+      </h2>
 
       <p>
-        Навчайся у власному ритмі, відкривай нові можливості
-        та створюй свою історію успіху разом із VAMP.
+        Ми створили простір, у якому кожен учень може
+        навчатися у власному темпі, відстежувати свої
+        результати та впевнено рухатися вперед.
       </p>
 
-      <div class="hero-buttons">
-      <a href="login.html?mode=signup" class="btn btn-primary">
-        Розпочати навчання →
+    </section>
+
+
+    <section id="advantages" class="advantages section">
+
+      <span class="section-label">ТВОЇ МОЖЛИВОСТІ</span>
+
+      <h2>Усе необхідне для навчання</h2>
+
+      <div class="advantages-grid">
+
+        <div class="advantage-card">
+          <div class="card-icon">✦</div>
+          <h3>Особистий кабінет</h3>
+          <p>
+            Усі твої навчальні матеріали та результати
+            в одному зручному місці.
+          </p>
+        </div>
+
+        <div class="advantage-card">
+          <div class="card-icon">✎</div>
+          <h3>Електронний щоденник</h3>
+          <p>
+            Переглядай оцінки, предмети та власні
+            навчальні досягнення.
+          </p>
+        </div>
+
+        <div class="advantage-card">
+          <div class="card-icon">⌘</div>
+          <h3>Словник</h3>
+          <p>
+            Зберігай нові слова, переклади та приклади,
+            щоб запам'ятовувати їх ефективніше.
+          </p>
+        </div>
+
+        <div class="advantage-card">
+          <div class="card-icon">✓</div>
+          <h3>Завдання та розклад</h3>
+          <p>
+            Плануй навчання, стеж за дедлайнами
+            та не пропускай важливого.
+          </p>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="start-section">
+
+      <span class="section-label">ТВІЙ ЧАС — ЗАРАЗ</span>
+
+      <h2>
+        Готовий(-а) до<br>
+        <span>нового рівня?</span>
+      </h2>
+
+      <p>
+        Приєднуйся до VAMP та відкривай нові можливості!
+      </p>
+
+      <a href="login.html" class="primary-button">
+        Увійти до кабінету →
       </a>
 
-      <a href="#about" class="btn">
-        Дізнатися більше
-      </a>
-      </div>
+    </section>
 
-      <div class="hero-stats">
-        <div><strong>V</strong><span>Vision</span></div>
-        <div><strong>A</strong><span>Ambition</span></div>
-        <div><strong>M</strong><span>Motivation</span></div>
-        <div><strong>P</strong><span>Progress</span></div>
-      </div>
-    </div>
+  </main>
 
-    <div class="hero-decoration">
-      <div class="floating-card card-one">
-        <span>✦</span>
-        Твій прогрес
-        <strong>+100%</strong>
-      </div>
 
-      <div class="floating-card card-two">
-        <span>📚</span>
-        Learning mode
-        <strong>ON</strong>
-      </div>
+  <footer id="contacts" class="footer">
 
-      <div class="hero-orb">
-        <span>V</span>
-      </div>
-    </div>
-  </section>
+    <div class="logo">VAMP<span>.</span></div>
 
-  <section class="landing-section" id="about">
-    <span class="eyebrow">OUR PHILOSOPHY</span>
-    <h2>Більше, ніж просто школа.</h2>
+    <p>Твоя освіта. Твої можливості. Твоє майбутнє.</p>
 
-    <p>
-      VAMP — це простір, у якому навчання стає частиною
-      твого життя. Тут ти можеш розвиватися, ставити цілі
-      та бачити власний прогрес.
-    </p>
-  </section>
+    <span>© 2026 VAMP. Усі права захищені.</span>
 
-  <section class="landing-section" id="features">
-    <span class="eyebrow">YOUR POSSIBILITIES</span>
-    <h2>Усе необхідне — в одному місці.</h2>
-
-    <div class="grid grid-3">
-
-      <div class="card feature-card">
-        <div class="feature-icon">📔</div>
-        <h3>Електронний щоденник</h3>
-        <p>Оцінки, успішність та історія твоїх результатів.</p>
-      </div>
-
-      <div class="card feature-card">
-        <div class="feature-icon">📚</div>
-        <h3>Особистий словник</h3>
-        <p>Зберігай нові слова, переклади та приклади.</p>
-      </div>
-
-      <div class="card feature-card">
-        <div class="feature-icon">📅</div>
-        <h3>Розклад уроків</h3>
-        <p>Плануй навчання та не пропускай важливі заняття.</p>
-      </div>
-
-      <div class="card feature-card">
-        <div class="feature-icon">✍️</div>
-        <h3>Домашні завдання</h3>
-        <p>Відстежуй дедлайни та контролюй свій прогрес.</p>
-      </div>
-
-      <div class="card feature-card">
-        <div class="feature-icon">🎓</div>
-        <h3>Кабінет учителя</h3>
-        <p>Усе для роботи з учнями та навчальними групами.</p>
-      </div>
-
-      <div class="card feature-card">
-        <div class="feature-icon">✨</div>
-        <h3>Твій особистий простір</h3>
-        <p>Профіль, досягнення та індивідуальні налаштування.</p>
-      </div>
-
-    </div>
-  </section>
-
-  <section class="landing-cta">
-    <h2>Твоя історія починається тут.</h2>
-    <a href="login.html?mode=signup" class="btn btn-primary">
-      Приєднатися до VAMP →
-    </a>
-  </section>
-
-  <footer class="landing-footer">
-    <span class="brand-name">VAMP</span>
   </footer>
 
 </body>
