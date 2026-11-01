@@ -1,4 +1,8 @@
-
+/* =====================================
+   VAMP ONLINE SCHOOL
+   Main JavaScript
+===================================== */
+const sb = window.vampSupabase;
 const SUPABASE_URL = "ТВІЙ_PROJECT_URL";
 const SUPABASE_PUBLISHABLE_KEY = "ТВІЙ_PUBLISHABLE_KEY";
 
